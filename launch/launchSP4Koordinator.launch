@@ -1,0 +1,10 @@
+<launch>
+
+	<arg name="ip_bildanalysator" default="--IP 127.0.0.1"/>
+    	<node pkg="SP4Koordinator" 
+    		type="SP4Koordinator"
+        	name="SPKoordinator" 
+        	output="screen" 
+        	args="$(arg ip_bildanalysator)"/>
+
+</launch>

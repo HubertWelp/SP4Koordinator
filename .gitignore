@@ -1,0 +1,8 @@
+*.pro.user
+*.workspace.user
+build*/
+debug/
+release/
+
+.vscode/
+	
