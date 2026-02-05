@@ -16,8 +16,13 @@ ROSWindowWrapper::ROSWindowWrapper(MainWindow* window, bool ros_enabled)
         // Publisher for state changes
         state_pub_ = nh_->advertise<std_msgs::String>("/current_state", 10, true);
         ROS_INFO("Publisher for /current_state initialized.");
-
-        // Connect to window's state change signal
+        // Subscriber for jackal sweet selection
+        sweet_selection_jackal_sub_ = nh_->subscribe("/sweet_selection_jackal", 10,
+            &ROSWindowWrapper::sweetSelectionJackalCallback, this);
+        ROS_INFO("Subscriber for /sweet_selection_jackal initialized.");
+        // Publisher for goalposeselection
+        goalpose_pub_ = nh_->advertise<std_msgs::Int32>("/sp4/goalpose", 10, true);
+        ROS_INFO("Publisher for /sp4/goalpose initialized.");
         QObject::connect(window_, &MainWindow::stateChanged,
             [this](const QString& state) {
                 if (ros_enabled_) {
@@ -41,32 +46,79 @@ void ROSWindowWrapper::onStateChanged(const QString& state) {
     this->publishStateChange(state.toStdString());
 }
 
-void ROSWindowWrapper::sweetSelectionCallback(const std_msgs::Int32::ConstPtr& msg) {
-    if (!ros_enabled_) return;
-
-    if (msg->data >= 0 && msg->data < 4) {
-        ROS_INFO("Received sweet selection: %d", msg->data);
-        // Use QMetaObject::invokeMethod for thread-safe calls to GUI
-        QMetaObject::invokeMethod(window_, [this, msg]() {
-            switch(msg->data) {
-                case 0: window_->onZiel1Button(); break;
-                case 1: window_->onZiel2Button(); break;
-                case 2: window_->onZiel3Button(); break;
-                case 3: window_->onZiel4Button(); break;
-            }
-        }, Qt::QueuedConnection);
-    } else {
-        ROS_WARN("Invalid sweet selection received: %d", msg->data);
-    }
+void ROSWindowWrapper::triggerSweetSelectionGui(int selection){
+    // Thread-safe call into Qt GUI thread
+    QMetaObject::invokeMethod(window_, [this, selection]() {
+        switch(selection) {
+            case 0: window_->onZiel1Button(); break;
+            case 1: window_->onZiel2Button(); break;
+            case 2: window_->onZiel3Button(); break;
+            case 3: window_->onZiel4Button(); break;
+            default: break;
+        }
+    }, Qt::QueuedConnection);
 }
 
-void ROSWindowWrapper::publishStateChange(const std::string& state) {
+void ROSWindowWrapper::publishGoalPoseId(int goalpose_id)
+{
+    if (!ros_enabled_) return;
+
+    std_msgs::Int32 msg;
+    msg.data = goalpose_id;
+    goalpose_pub_.publish(msg);
+
+    ROS_INFO("Published /sp4/goalpose: %d", goalpose_id);
+}
+
+void ROSWindowWrapper::sweetSelectionCallback(
+    const std_msgs::Int32::ConstPtr& msg)
+{
+    if (!ros_enabled_) return;
+
+    if (msg->data < 0 || msg->data > 3) {
+        ROS_WARN("Invalid sweet selection received: %d", msg->data);
+        return;
+    }
+
+    // Standard-Ablageposition
+    publishGoalPoseId(1);
+
+    ROS_INFO("Sweet selection %d → goalpose_id=1", msg->data);
+    triggerSweetSelectionGui(msg->data);
+}
+
+void ROSWindowWrapper::sweetSelectionJackalCallback(
+    const std_msgs::Int32::ConstPtr& msg)
+{
+    if (!ros_enabled_) return;
+
+    if (msg->data < 0 || msg->data > 3) {
+        ROS_WARN("Invalid jackal sweet selection received: %d", msg->data);
+        return;
+    }
+
+    // Jackal-Ablageposition
+    publishGoalPoseId(2);
+
+    ROS_INFO("Jackal sweet selection %d → goalpose_id=2", msg->data);
+    triggerSweetSelectionGui(msg->data);
+}
+
+void ROSWindowWrapper::publishStateChange(const std::string& state)
+{
     if (!ros_enabled_) return;
 
     std_msgs::String msg;
     msg.data = state;
     state_pub_.publish(msg);
+
     ROS_INFO_STREAM("Published state: " << state);
+
+    // Reset nach Übergabe
+    if (state == "OBJECT_GIVEN") {
+        publishGoalPoseId(1);
+        ROS_INFO("Reset goalpose to 1 after OBJECT_GIVEN");
+    }
 }
 
 void ROSWindowWrapper::enableROS(bool enable) {

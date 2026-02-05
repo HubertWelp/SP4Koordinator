@@ -33,12 +33,17 @@ private:
     void sweetSelectionCallback(const std_msgs::Int32::ConstPtr& msg);
     void publishStateChange(const std::string& state);
     void simulateButtonPress(int button_index);
+    void sweetSelectionJackalCallback(const std_msgs::Int32::ConstPtr& msg);
+    void triggerSweetSelectionGui(int selection);
+    void publishGoalPoseId(int goalpose_id);
 
     MainWindow* window_;
     bool ros_enabled_;
     std::unique_ptr<ros::NodeHandle> nh_;
     ros::Subscriber sweet_selection_sub_;
-    ros::Publisher state_pub_;
+    ros::Subscriber sweet_selection_jackal_sub_;
+    ros::Publisher  goalpose_pub_;
+    ros::Publisher  state_pub_;
 };
 
 } // namespace pds
