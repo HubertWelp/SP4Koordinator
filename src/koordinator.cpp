@@ -70,7 +70,10 @@ void Koordinator::handleRoboterNachrichten()
 {
     string nachricht =  m_roboter->getStatus();
         cout << "Roboterstatus empfangen: " <<  nachricht  << endl;
-    objektUebergeben();
+    if(nachricht!="Beobachterposition eingenommen")
+      objektUebergeben();
+    else
+      observerPosEingenommen();
 }
 
 void Koordinator::handleTimerNachrichten()
@@ -129,6 +132,11 @@ void Koordinator::objektErkannt()
 void Koordinator::objektUebergeben()
 {
     zustand->objektUebergeben();
+}
+
+void Koordinator::observerPosEingenommen()
+{
+    zustand->observerPosEingenommen();
 }
 
 void Koordinator::objektNichtErkannt()

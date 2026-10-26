@@ -22,11 +22,14 @@ public:
     */
     void objektErkannt();
     void objektNichtErkannt();
+    void observerPosEingenommen();
+    void onTimer();
     int getSuessigkeit();
 protected:
 
 private:
     Bildanalysator_Proxy::ObjektTyp m_suessigkeit;
+    unsigned int observerPos;
 };
 
 #endif //SUCHEND_H

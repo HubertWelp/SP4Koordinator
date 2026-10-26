@@ -26,6 +26,7 @@ public:
     virtual void objektErkannt(){}
     virtual void objektNichtErkannt(){}
     virtual void objektUebergeben(){}
+    virtual void observerPosEingenommen(){};
     virtual void onTimer() {}
 
     void setZustand(Dialogzustand* z);

@@ -5,6 +5,7 @@
 ROSNode::ROSNode(int argc, char **argv,  const string nodeName)
     : m_pStringTopic(PS_TOPIC)
     , m_pPoseTopic(PP_TOPIC)
+    , m_pIntTopic(PO_TOPIC)
     , m_sTopic(S_TOPIC)
 {
     ros::init(argc,argv,nodeName);
@@ -14,6 +15,7 @@ ROSNode::ROSNode(int argc, char **argv,  const string nodeName)
     ros::start();
     changeStringPublisherTopic(m_pStringTopic);
     changePosePublisherTopic(m_pPoseTopic);
+    changeIntPublisherTopic(m_pIntTopic);
     changeSubscriberTopic(m_sTopic);
     th=thread(&ROSNode::threadMethod,this);
     cout << "thread started for spinning\n";
@@ -44,11 +46,25 @@ void ROSNode::changePosePublisherTopic(const string &topic)
     m_posePublisher = nh.advertise<geometry_msgs::PoseStamped>(topic,1000);
 }
 
+void ROSNode::changeIntPublisherTopic(const string &topic)
+{
+    ros::NodeHandle nh;
+    m_intPublisher = nh.advertise<std_msgs::Int32>(topic,1000);
+}
+
 void ROSNode::publish(const string msg)
 {
     std_msgs::String rosMsg;
     rosMsg.data = msg;
     m_stringPublisher.publish(rosMsg);
+}
+
+void ROSNode::publish(const unsigned int msg)
+{
+  std_msgs::Int32 rosMsg;
+  rosMsg.data = msg;
+  m_intPublisher.publish(rosMsg);
+
 }
 
 void ROSNode::publish(const double x, const double y, const double z, const double phi) // Fuer Drehung muss w = 1 und phi ein radiant

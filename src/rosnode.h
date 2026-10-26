@@ -4,6 +4,7 @@
 #include <thread>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Int32.h>
 #include <geometry_msgs/PoseStamped.h>
 //#include <move_base_msgs/MoveBaseActionResult.h>
 
@@ -14,6 +15,7 @@ using namespace std;
 #define NODENAME    "sp3"
 #define PP_TOPIC    "robot/pose"
 #define PS_TOPIC    "robot/status"
+#define PO_TOPIC    "robot/observer_pos"
 //#define S_TOPIC     "move_base/result"
 #define S_TOPIC     "rueckmeldung"
 
@@ -25,7 +27,9 @@ public:
     void changeSubscriberTopic(const string& topic);
     void changeStringPublisherTopic(const string& topic);
     void changePosePublisherTopic(const string& topic);
+    void changeIntPublisherTopic(const string& topic);
     void publish(const string msg);
+    void publish(const unsigned int msg);
     /**
      * @brief publish
      * @param x
@@ -44,9 +48,11 @@ public:
 private:
     ros::Publisher m_stringPublisher;
     ros::Publisher m_posePublisher;
+    ros::Publisher m_intPublisher;
     ros::Subscriber m_subscriber;
     string m_pStringTopic;
     string m_pPoseTopic;
+    string m_pIntTopic;
     string m_sTopic;
     void threadMethod();
     std::thread th;

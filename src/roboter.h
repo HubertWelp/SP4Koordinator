@@ -18,10 +18,13 @@ public:
      * Sendet Position und Orientierung an den RosNode
      */
     void greife(float x, float y, float z, float phi, float breite);
+    void setObserverPos(unsigned int nr);
+    unsigned int getMaxObserverPos();
 private:
 //    void msgReceivedCallback(const std_msgs::String::ConstPtr& msg);
     void msgReceivedCallback(const std_msgs::String::ConstPtr &msg);
     string m_status;
+    unsigned int maxObsPos;
     ROSNode *rtst;
 
 };

@@ -23,6 +23,7 @@ Verabschiedend::~Verabschiedend()
 }
 void Verabschiedend::onTimer()
 {
+    std::cout << "'V E R A B S C H I E D E N D' wird nach 5 sec verlassen" << std::endl;
     dialog->setZustand(new Wartend(dialog));
     delete this;
 

@@ -26,6 +26,7 @@ public:
     void objektErkannt();
     void objektNichtErkannt();
     void objektUebergeben();
+    void observerPosEingenommen();
     void onTimer();
 
     Dialogzustand* getDialogzustand();

@@ -4,6 +4,7 @@ using namespace std;
 
 Roboter::Roboter(int argc, char **argv)
     :ROSNode(argc,argv)
+    ,maxObsPos(1)
 {
     rtst = new ROSNode(argc,argv);
 }
@@ -30,6 +31,17 @@ void Roboter::greife(float x, float y,float z,float phi,float breite)
     str=to_string(breite);
     rtst->publish(str);
 
+}
+
+void Roboter::setObserverPos(unsigned int nr)
+{
+  if(nr<maxObsPos)
+    rtst->publish(nr);
+}
+
+unsigned int Roboter::getMaxObserverPos()
+{
+  return maxObsPos;
 }
 
 //void Roboter::msgReceivedCallback(const std_msgs::String::ConstPtr &msg)
